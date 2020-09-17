@@ -186,13 +186,57 @@ int main(int argc, char *argv[])
           printf("Test for stime_read: %s \n", stime_read);
       }
       
-      if (flag -> vmemflag) {
-          
-          
+      if (flag->vmemflag)
+    {
+      char path[255];
+      char vmem[255];
+      char word;
+      int i = 0;
+
+      strcpy(path, "/proc/");
+      strcat(path, flag->pid);
+      strcat(path, "/statm");
+
+      FILE *statmfile = fopen(path, "r");
+
+      while ((word = fgetc(statmfile)) != EOF)
+      {
+        if (!(isspace(word)))
+        {
+          vmem[i] = word;
+          i++;
+        }
+        else
+        {
+          break;
+        }
       }
+      fclose(statmfile);
+      printf("Test for vmem: %s \n", vmem);
+    }
       
       
       if (flag -> cmdflag) {
+          char path[255];
+          char cmd[500];
+          char word;
+          int i = 0;
+          
+          strcpy(path, "/proc/");
+          strcat(path, flag -> pid);
+          strcat(path, "/cmdline");
+          
+          FILE* cmdfile = fopen(path, "r");
+          
+          while ((word = fgetc(cmdfile)) != EOF){
+              if (word != NULL){
+                  cmd[i] = word;
+                  i++;
+              }
+          }
+          fclose(cmdfile);
+          printf("Test for cmdline: %s \n", cmd);
+          
           
           
       }
