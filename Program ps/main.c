@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
           FILE* cmdfile = fopen(path, "r");
           
           while ((word = fgetc(cmdfile)) != EOF){
-              if (word != NULL){
+              if (word != '\0'){
                   cmd[i] = word;
                   i++;
               }
