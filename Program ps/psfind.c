@@ -174,39 +174,29 @@ flags *parseArgument(int argc, char *argv[])
 
       break;
     case '?':
-      fprintf(stderr, "error: unsupported option\n");
+      fprintf(stderr, "Error: unsupported option\n");
       exit(EXIT_FAILURE);
       break;
     default:
-      fprintf(stderr, "error: unsupported option\n");
+      fprintf(stderr, "Error: unsupported option\n");
       break;
     }
       
   }
 
-  // for debugging, erase later
-  /*
-  if (pidflag)
-  {
-    printf("received pid num: %s\n", f->pid);
-  }
-  */
-  // for debugging
-  //printf("pidflag: %d, stateflag: %d, stimeflag: %d, vmemflag: %d, utimeflag: %d, cmdflag: %d\n", pidflag, stateflag, stimeflag, vmemflag, utimeflag, cmdflag);
-if (test1 == 1){
-    
-  f->pidflag = pidflag;
-  f->stateflag = stateflag;
-  f->stimeflag = stimeflag;
-  f->vmemflag = vmemflag;
-  f->utimeflag = utimeflag;
-  f->cmdflag = cmdflag;
+    if (test1 == 0 && argc > 1){
+        fprintf(stderr, "Error: unsupported option\n");
+        exit(EXIT_FAILURE);    
+    }
 
-} else {
-    fprintf(stderr, "error: unsupported option\n");
-    exit(EXIT_FAILURE);
-}
-  return f;
+    f->pidflag = pidflag;
+    f->stateflag = stateflag;
+    f->stimeflag = stimeflag;
+    f->vmemflag = vmemflag;
+    f->utimeflag = utimeflag;
+    f->cmdflag = cmdflag;
+    
+    return f;
 }
 
 int findDigit(int num) {
