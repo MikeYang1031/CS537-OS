@@ -28,8 +28,8 @@
 #ifndef PS_FIND
 #define PS_FIND
 
-#define NUM_FLAGS 6
-
+#define MAX_PID 7
+#define MAX_NUM_PID 100
 
 typedef struct Flags{
     int pidflag;
@@ -44,13 +44,9 @@ typedef struct Flags{
 
 flags * parseArgument(int argc, char * argv[]);
 
-void openProcFile(flags* flag);
-
-void scanDirectory(flags *flag);
+char ** scanDirectory(flags *flag);
 
 void readPidandPrint(flags *flag, char * pid);
 
 int findDigit(int num);
 
-
-#endif
