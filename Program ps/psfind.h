@@ -42,15 +42,15 @@ typedef struct Flags{
 
 } flags;
 
-enum flag_list{PID, PIDNUM, STATE, STIME, VMEM, USER_T, CMDLINE};
-
 flags * parseArgument(int argc, char * argv[]);
 
-const char * openProcFile(int pid, int pidflag);
+void openProcFile(flags* flag);
 
+void scanDirectory(flags *flag);
 
+void readPidandPrint(flags *flag, char * pid);
 
-
+int findDigit(int num);
 
 
 #endif
