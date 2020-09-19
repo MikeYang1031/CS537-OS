@@ -337,7 +337,6 @@ void readPidandPrint(flags *flag, char * pid) {
         printf("PID: %s\n", pid);
     }
     else {
-        printf("Error: There is no such PID %s\n", pid);
         exit(EXIT_FAILURE);
     }
     char line[255];
