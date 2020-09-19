@@ -335,6 +335,7 @@ char ** scanDirectory(flags *flag){
       
       /** the most important variables **/
       char ** pid_list = (char**)calloc(MAX_NUM_PID, sizeof(char*));
+      int list_count = 0;
       if (pid_list == NULL)
       {
           fprintf(stderr, "error: cannot allocate memory\n");
