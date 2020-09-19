@@ -44,8 +44,24 @@ int main(int argc, char *argv[])
       readPidandPrint(flag, flag->pid);
   }
   else {
-      scanDirectory(flag);
+       char ** pidList = scanDirectory(flag);     
       
+      for(int i = 0; i < MAX_NUM_PID; i++)
+      {
+      
+          if(pidList[i][0] != 0)
+          {
+              printf("%s\n", pidList[i]);
+          }
+      }
+      
+      
+      
+      for(int i = 0; i < MAX_NUM_PID; i++)   
+      {
+         free(pidList[i]);
+      }
+      free(pidList);
   }
     
   free(flag);
