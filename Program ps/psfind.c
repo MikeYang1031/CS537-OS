@@ -409,6 +409,9 @@ void readPidandPrint(flags *flag, char * pid) {
     printf("****************************\n");
     printf("\n");
     /**** FREE MEMORY ****/
+    /*
     free(pid);
+    */
+    
     
 }
