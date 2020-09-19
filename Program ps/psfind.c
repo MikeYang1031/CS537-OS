@@ -163,12 +163,12 @@ flags *parseArgument(int argc, char *argv[])
       }
 
       break;
-
+    /*
     case '?':
       fprintf(stderr, "error: unsupported option\n");
       exit(EXIT_FAILURE);
       break;
-
+    */
     default:
       fprintf(stderr, "error: unsupported option\n");
       exit(EXIT_FAILURE);
@@ -373,45 +373,33 @@ void readPidandPrint(flags *flag, char * pid) {
     /**** FREE MEMORY ****/
     free(path);
     
-    path = calloc((sizeof(proc) + sizeof(pid) + sizeof(cmdline)), sizeof(char));
-    sprintf(path, "%s%s%s", proc, pid, cmdline);
-    /**** OPENING CMDLINE FILE ****/
-    fp = fopen(path, "r");
-    
-    char word;
-    int i = 0;
-    
-    while ((word = fgetc(fp)) != EOF){
-        if (word !='\0'){
-            line[i] = word;
-            i++;
+    /*** Opening CmdLine file ***/
+    if(flag->cmdflag){
+        path = calloc((sizeof(proc) + sizeof(pid) + sizeof(cmdline)), sizeof(char));
+        sprintf(path, "%s%s%s", proc, pid, cmdline);
+        /**** OPENING CMDLINE FILE ****/
+        fp = fopen(path, "r");
+        char word;
+        int i = 0;
+        while ((word = fgetc(fp)) != EOF){
+            if (word !='\0'){
+                line[i] = word;
+                i++;
+            }
         }
-    }
-    printf("commandline: %s\n", line);
-    memset(line, 0, 255);
-    
-    /*
-    while (fscanf(fp, "%s", line) == 1)
-    {
-        cmd = line;
-        printf("commandline: %s\n", cmd);
+        printf("commandline: %s\n", line);
         memset(line, 0, 255);
-    }
-    */
-
+    
     /**** CLOSE FILE ****/
-    fclose(fp);
+        fclose(fp);
+    
     /**** FREE MEMORY ****/
     free(path);
+    }
     
-    //printf("***********RESULT***********\n");
-    //printf("%s: \n", pid);
     printf("****************************\n");
     printf("\n");
-    /**** FREE MEMORY ****/
-    /*
-    free(pid);
-    */
+    
     
     
 }
