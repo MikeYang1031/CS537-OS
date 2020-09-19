@@ -221,18 +221,14 @@ void readPidandPrint(flags *flag, char * pid) {
     char * userTime;
     char * stime;
     char * vmem;
-    char * cmd;
 
     char * path = calloc((sizeof(proc) + sizeof(pid) + sizeof(stat)), sizeof(char));
-    if (path == NULL){
-        exit(EXIT_FAILURE);
-    }
     sprintf(path, "%s%s%s", proc, pid, stat);
 
     /**** OPENING STAT FILE ******/
     FILE* fp;
-    if (fp = fopen(path, "r")){
-        printf("PID: %s\n", pid);
+    if ((fp = fopen(path, "r")) != NULL){
+        printf("%s: ", pid);
     }
     else {
         exit(EXIT_FAILURE);
@@ -248,21 +244,22 @@ void readPidandPrint(flags *flag, char * pid) {
         if (count == 3 && flag->stateflag)
         {
             state = line[0];
-            printf("state: %c\n", state);
+            printf("%c ", state);
             memset(line, 0, 255);
         }
         
         if (count == 14 && flag->utimeflag)
         {
             userTime = line;
-            printf("usertime: %s\n", userTime);
+            //printf("usertime: %s\n", line);
+            printf("utime=%s ", userTime);
             memset(line, 0, 255);
         }
                    
         if (count == 15 && flag->stimeflag)
         {
             stime = line;
-            printf("stime: %s\n", stime);
+            printf("%s ", stime);
             memset(line, 0, 255);
         }
     }
@@ -273,9 +270,6 @@ void readPidandPrint(flags *flag, char * pid) {
     fclose(fp);
     
     path = calloc((sizeof(proc) + sizeof(pid) + sizeof(statm)), sizeof(char));
-    if (path == NULL){
-        exit(EXIT_FAILURE);
-    }
     sprintf(path, "%s%s%s", proc, pid, statm);
     
     /**** OPENING STATM FILE ****/
@@ -284,7 +278,7 @@ void readPidandPrint(flags *flag, char * pid) {
     if (fscanf(fp, "%s", line) == 1 && flag->vmemflag)
     {
         vmem = line;
-        printf("vmem: %s\n", vmem); 
+        printf("%s ", vmem); 
         memset(line, 0, 255);
     }
 
@@ -296,11 +290,7 @@ void readPidandPrint(flags *flag, char * pid) {
     /*** Opening CmdLine file ***/
     if(flag->cmdflag){
         path = calloc((sizeof(proc) + sizeof(pid) + sizeof(cmdline)), sizeof(char));
-        if (path == NULL){
-            exit(EXIT_FAILURE);
-        }
         sprintf(path, "%s%s%s", proc, pid, cmdline);
-        
         /**** OPENING CMDLINE FILE ****/
         fp = fopen(path, "r");
         char word;
@@ -311,7 +301,7 @@ void readPidandPrint(flags *flag, char * pid) {
                 i++;
             }
         }
-        printf("commandline: %s\n", line);
+        printf("[%s]", line);
         memset(line, 0, 255);
     
     /**** CLOSE FILE ****/
@@ -320,8 +310,7 @@ void readPidandPrint(flags *flag, char * pid) {
     /**** FREE MEMORY ****/
     free(path);
     }
-    
-    printf("****************************\n");
+
     printf("\n");
 
 }
