@@ -50,3 +50,5 @@ void readPidandPrint(flags *flag, char * pid);
 
 int findDigit(int num);
 
+
+#endif
