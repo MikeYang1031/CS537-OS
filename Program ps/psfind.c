@@ -34,14 +34,15 @@ flags *parseArgument(int argc, char *argv[])
   int pidflag = 0, stateflag = 0, stimeflag = 0, vmemflag = 0; // flags with default value False
   int utimeflag = 1, cmdflag = 1;                              // flags with default value True
 
+    int test1 = 0;
+    
   //  If there is an error in the command line, print and error and exit.  Don't try to go forward on questionable information.
   while ((opt = getopt(argc, argv, "p:S::s::U::v::c::")) != -1)
   {
     // turn off error message
     opterr = 0;
-    
-    //printf("received option: %c\n", opt);
-    switch (opt)
+
+      switch (opt)
     {
 
     case 'p':
@@ -61,6 +62,8 @@ flags *parseArgument(int argc, char *argv[])
         {
           f->pid = optarg;
           pidflag = 1;
+            
+         test1 = 1;
         }
         else
         {
@@ -88,15 +91,18 @@ flags *parseArgument(int argc, char *argv[])
           fprintf(stderr, "error: option syntax error\n");
           exit(EXIT_FAILURE);
       }
+      
       else
       {
         stimeflag = 1;
-      }
 
+          test1=1;
+
+      }
       break;
 
     case 's':
-
+            
       if ((optarg != NULL) && (strcmp(optarg, "-") == 0))
       {
         stateflag = 0;
@@ -109,8 +115,9 @@ flags *parseArgument(int argc, char *argv[])
       else
       {
         stateflag = 1;
+        test1=1;
+          
       }
-
       break;
 
     case 'v':
@@ -127,6 +134,7 @@ flags *parseArgument(int argc, char *argv[])
       else
       {
         vmemflag = 1;
+          test1=1;
       }
       break;
 
@@ -144,6 +152,7 @@ flags *parseArgument(int argc, char *argv[])
       else
       {
         utimeflag = 1;
+          test1=1;
       }
       break;
 
@@ -160,20 +169,19 @@ flags *parseArgument(int argc, char *argv[])
       else
       {
         cmdflag = 1;
+          test1=1;
       }
 
       break;
-    /*
     case '?':
       fprintf(stderr, "error: unsupported option\n");
       exit(EXIT_FAILURE);
       break;
-    */
     default:
       fprintf(stderr, "error: unsupported option\n");
-      exit(EXIT_FAILURE);
       break;
     }
+      
   }
 
   // for debugging, erase later
@@ -185,7 +193,8 @@ flags *parseArgument(int argc, char *argv[])
   */
   // for debugging
   //printf("pidflag: %d, stateflag: %d, stimeflag: %d, vmemflag: %d, utimeflag: %d, cmdflag: %d\n", pidflag, stateflag, stimeflag, vmemflag, utimeflag, cmdflag);
-
+if (test1 == 1){
+    
   f->pidflag = pidflag;
   f->stateflag = stateflag;
   f->stimeflag = stimeflag;
@@ -193,6 +202,10 @@ flags *parseArgument(int argc, char *argv[])
   f->utimeflag = utimeflag;
   f->cmdflag = cmdflag;
 
+} else {
+    fprintf(stderr, "error: unsupported option\n");
+    exit(EXIT_FAILURE);
+}
   return f;
 }
 
@@ -317,15 +330,23 @@ void readPidandPrint(flags *flag, char * pid) {
 
     char * path = calloc((sizeof(proc) + sizeof(pid) + sizeof(stat)), sizeof(char));
     sprintf(path, "%s%s%s", proc, pid, stat);
-    printf("PID: %s\n", pid);
-    printf("%s\n", path);
+
     /**** OPENING STAT FILE ******/
-    FILE * fp = fopen(path, "r");
+    FILE* fp;
+    if (fp = fopen(path, "r")){
+        printf("PID: %s\n", pid);
+    }
+    else {
+        printf("Error: There is no such PID %s\n", pid);
+        exit(EXIT_FAILURE);
+    }
     char line[255];
     int count = 0;
+    
+    
+    
     while (fscanf(fp, "%s", line) == 1)
     {
-        //printf("%s\n", word);
         count++;
         if (count == 3 && flag->stateflag)
         {
