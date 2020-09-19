@@ -209,13 +209,6 @@ if (test1 == 1){
   return f;
 }
 
-/*(
-void openProcFile(flags *flag)
-{
-  
-}
-*/
-
 int findDigit(int num) {
     int digit = 0;
     do
@@ -225,94 +218,6 @@ int findDigit(int num) {
     } while(num != 0);
     
     return digit;
-}
-
-void scanDirectory(flags *flag){
-      const char * proc = "/proc/";
-      const char * status = "/status";
-      
-      int id = getuid();
-      int digit = findDigit(id);
-      /** Allocate Heap memory **/
-      char * userId = calloc(sizeof(digit),sizeof(char));
-      sprintf(userId, "%d", id);
-      //printf("current user id: %s\n", userId);
-      
-      DIR * directory = opendir(proc);
-      struct dirent * file;
-      if (directory == NULL) 
-      {
-          fprintf(stderr, "error opening virtual file system directory\n");
-          exit(EXIT_FAILURE);
-      }
-      
-      while ((file = readdir(directory))) 
-      {
-          int is_process = -1;
-          int size = strlen(file->d_name);
-          for (int i = 0; i < size; i++)
-          {
-              if (!isdigit(file->d_name[i]))
-              {
-                  is_process = 0;
-                  break;
-              }
-          }
-          
-          if (is_process) 
-          {
-              /** Allocate Heap memory **/
-              char *path = calloc((sizeof(proc)+sizeof(file->d_name)+sizeof(status)), sizeof(char));
-              sprintf(path, "%s%s%s", proc, file->d_name, status);
-              
-              //printf("%s\n", path);
-              FILE * fp = fopen(path, "r");
-              
-              char word[255];
-              char * pid;
-              
-              int userProcess = 0, getpid = 0;
-              while ((fscanf(fp, "%s", word)) == 1) 
-              {
-                  
-                  if(userProcess)
-                  {
-                      readPidandPrint(flag, pid);
-                      break;
-                  }
-                  else if (getpid)
-                  {
-                      //printf("number of digits of pid: %ld\n", strlen(word));
-                      pid = calloc(sizeof(strlen(word)),sizeof(char));
-                      sprintf(pid, "%s", word);
-                      //printf("pid: %s\n", pid);
-                      getpid = 0;
-                  }
-                  else
-                  {
-                      if (strcmp(word, "Pid:") == 0)
-                      {
-                          getpid = 1;
-                      }
-                      if (strcmp(word, userId) == 0)
-                      {
-                          userProcess = 1;   
-                      }
-                  }
-              }
-              
-              /**** FREE MEMORY ****/
-              free(path);
-              fclose(fp);
-          }
-      }
-      
-      if (closedir(directory) != 0) {
-          fprintf(stderr, "error closing the virtual file system directory\n");
-          exit(EXIT_FAILURE);
-      }
-      /**** FREE MEMORY ****/
-      free(userId);
 }
 
 
@@ -419,7 +324,134 @@ void readPidandPrint(flags *flag, char * pid) {
     
     printf("****************************\n");
     printf("\n");
+
+}
+
+char ** scanDirectory(flags *flag){
+      
+      // set path variables
+      const char * proc = "/proc/";
+      const char * status = "/status";
+      
+      /** the most important variables **/
+      char ** pid_list = (char**)calloc(MAX_NUM_PID, sizeof(char*));
+      if (pid_list == NULL)
+      {
+          fprintf(stderr, "error: cannot allocate memory\n");
+          exit(EXIT_FAILURE);
+      }
     
+      for (int i = 0; i < MAX_NUM_PID; i++)
+      {
+          pid_list[i] = (char*)calloc(MAX_PID, sizeof(char));
+      }
+      /**********************************/
+       
+      int id = getuid();
+      int digit = findDigit(id);
+      /** Allocate Heap memory for user ID**/
+      char * userId = calloc(sizeof(digit),sizeof(char));
+      
+      if (userId == NULL)
+      {
+          fprintf(stderr, "error: cannot allocate memory\n");
+          exit(EXIT_FAILURE);
+      }
+      sprintf(userId, "%d", id);
+      
+      /** open directory process **/
+      DIR * directory = opendir(proc);
+      struct dirent * file;
+      
+      // check return values
+      if (directory == NULL) 
+      {
+          fprintf(stderr, "error opening virtual file system directory\n");
+          exit(EXIT_FAILURE);
+      }
+      
+      
+      while ((file = readdir(directory))) 
+      {
+          // check each file name
+          int is_process = -1;
+          int size = strlen(file->d_name);
+          for (int i = 0; i < size; i++)
+          {
+              if (!isdigit(file->d_name[i]))
+              {
+                  is_process = 0;
+                  break;
+              }
+          }
+          
+          // if the file name is a process, open the file
+          if (is_process) 
+          {
+              /** Allocate Heap memory **/
+              char *path = calloc((sizeof(proc)+sizeof(file->d_name)+sizeof(status)), sizeof(char));
+              sprintf(path, "%s%s%s", proc, file->d_name, status);
+              
+ 
+              FILE * fp = fopen(path, "r");
+              
+              char word[300];
+              char * pid;
+              int userProcess = 0, getpid = 0;
+              
+              while ((fscanf(fp, "%s", word)) == 1) 
+              {
+                  
+                  if(userProcess)
+                  {
+                      if (digit < MAX_PID)
+                      {
+                          pid_list[list_count] = realloc(pid_list[list_count], digit);
+                      }
+                      pid_list[list_count++] = pid;
+                      break;
+                  }
+                  else if (getpid)
+                  {
+                      int digit = strlen(word);
+                      pid = (char*)calloc(digit,sizeof(char));
+                      
+                      if (pid == NULL)
+                      {
+                          fprintf(stderr, "error: cannot allocate memory\n");
+                          exit(EXIT_FAILURE);
+                      }
+                      
+                      sprintf(pid, "%s", word);
+                      getpid = 0;
+                  }
+                  else
+                  {
+                      if (strcmp(word, "Pid:") == 0)
+                      {
+                          getpid = 1;
+                      }
+                      if (strcmp(word, userId) == 0)
+                      {
+                          userProcess = 1;   
+                      }
+                  }
+              }
+              
+              /**** FREE MEMORY ****/
+              free(path);
+              fclose(fp);
+              memset(word, 0 , 300);
+          }
+      }
+
+      if (closedir(directory) != 0) {
+          fprintf(stderr, "error: cannot close the virtual file system directory\n");
+          exit(EXIT_FAILURE);
+      }
     
-    
+      /**** FREE MEMORY ****/
+      free(userId);
+      
+      return pid_list;
 }
