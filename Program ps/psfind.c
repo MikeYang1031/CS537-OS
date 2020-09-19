@@ -224,6 +224,9 @@ void readPidandPrint(flags *flag, char * pid) {
     char * cmd;
 
     char * path = calloc((sizeof(proc) + sizeof(pid) + sizeof(stat)), sizeof(char));
+    if (path == NULL){
+        exit(EXIT_FAILURE);
+    }
     sprintf(path, "%s%s%s", proc, pid, stat);
 
     /**** OPENING STAT FILE ******/
@@ -252,7 +255,6 @@ void readPidandPrint(flags *flag, char * pid) {
         if (count == 14 && flag->utimeflag)
         {
             userTime = line;
-            //printf("usertime: %s\n", line);
             printf("usertime: %s\n", userTime);
             memset(line, 0, 255);
         }
@@ -271,6 +273,9 @@ void readPidandPrint(flags *flag, char * pid) {
     fclose(fp);
     
     path = calloc((sizeof(proc) + sizeof(pid) + sizeof(statm)), sizeof(char));
+    if (path == NULL){
+        exit(EXIT_FAILURE);
+    }
     sprintf(path, "%s%s%s", proc, pid, statm);
     
     /**** OPENING STATM FILE ****/
@@ -291,7 +296,11 @@ void readPidandPrint(flags *flag, char * pid) {
     /*** Opening CmdLine file ***/
     if(flag->cmdflag){
         path = calloc((sizeof(proc) + sizeof(pid) + sizeof(cmdline)), sizeof(char));
+        if (path == NULL){
+            exit(EXIT_FAILURE);
+        }
         sprintf(path, "%s%s%s", proc, pid, cmdline);
+        
         /**** OPENING CMDLINE FILE ****/
         fp = fopen(path, "r");
         char word;
