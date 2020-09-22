@@ -2,17 +2,17 @@
 * FILENAME :       main.c             
 *
 * DESCRIPTION :
-*       A simple 537 version of the Linux ps command
+*       This is a source file that runs cs537 version of ps command program.
 *
 *
-*
-* AUTHOR :    Jiwon Song  HyukJoon Yang   
-*
-*
+* AUTHOR :  Jiwon Song  HyukJoon Yang   
+* CLASS: CS 537
+* TERM: FALL 2020
 *
 **/
 
 #include "psfind.h"
+
 
 /*
  * Function: main
@@ -23,50 +23,45 @@
  *  argv: a pointer array that points to each argument passed to the program
  *  
  *
- *  returns: 0
+ *  returns: 0 for successful exit, exit with EXIT_FAILURE for any errors
  */
 
 int main(int argc, char *argv[])
 {
     
-  /*
-  parsing part
-  */
+  // parse command line arguments
   flags * flag = parseArgument(argc, argv);
 
-  /*
-  reading part
-  */
   
+  // if the user specifies process id
   if (flag->pidflag)
   {
       readPidandPrint(flag, flag->pid);
   }
+  // if the user does not provide process id
   else {
-      char ** pidList = scanDirectory(flag);     
+      char ** pidList = scanDirectory();     
       
       for(int i = 0; i < MAX_NUM_PID; i++)
       {
       
-          if(pidList[i][0] != 0)
+          if(pidList[i][0] == 0)
           {
-              //printf("%s\n", pidList[i]);
-              readPidandPrint(flag, pidList[i]);
+              break;
           }
+          readPidandPrint(flag, pidList[i]);
       }
       
-      
-      
+      // free heap allocated memory
       for(int i = 0; i < MAX_NUM_PID; i++)   
       {
          free(pidList[i]);
       }
+      // free double pointer
       free(pidList);
   }
   
-    
-  
-  
+  // free heap allocated memory
   free(flag);
   return 0;
 }
